@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Predicción de Diabetes Tipo 2</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        // Validación de campos numéricos
+        function validarFormulario(event) {
+            const inputs = document.querySelectorAll('input[type="number"]');
+            for (let input of inputs) {
+                if (input.value === '' || isNaN(input.value)) {
+                    alert("Por favor, ingrese valores numéricos válidos en todos los campos.");
+                    input.focus();
+                    event.preventDefault();
+                    return false;
+                }
+            }
+        }
+
+        // Mostrar popup al cargar resultado
+        window.onload = function () {
+            const resultado = "{{ resultado|safe }}";
+            if (resultado) {
+                document.getElementById("popup-texto").innerText = "Resultado: " + resultado;
+                document.getElementById("popup").style.display = "flex";
+            }
+        }
+
+        // Cerrar popup
+        function cerrarPopup() {
+            document.getElementById("popup").style.display = "none";
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>🩺 Predicción de Diabetes Tipo 2</h1>
+        <form action="/resultado" method="post" onsubmit="return validarFormulario(event)">
+            {% for campo, label in {
+                'preg': 'Número de embarazos',
+                'plas': 'Glucosa en sangre',
+                'pres': 'Presión arterial',
+                'skin': 'Grosor pliegue cutáneo del tríceps',
+                'insu': 'Nivel de insulina en sangre (2h)',
+                'mass': 'Índice de Masa Corporal (IMC)',
+                'pedi': 'Pedigrí de diabetes',
+                'age': 'Edad'
+            }.items() %}
+                <label>{{ label }}:</label>
+                <input type="number" step="any" name="{{ campo }}" required>
+            {% endfor %}
+            <input type="submit" value="Predecir">
+        </form>
+        <div style="text-align:center; margin-top: 20px;">
+            <a href="{{ url_for('static', filename='notebook.html') }}" target="_blank">
+                <button type="button" style="background-color:#1f7bb6;color:white;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-size:16px;">Ver Notebook Explicativo</button>
+            </a>
+        </div>
+    </div>
+
+    <!-- POPUP -->
+    <div id="popup" style="display:none;" class="popup-overlay">
+        <div class="popup-contenido">
+            <span id="popup-texto"></span>
+            <br><br>
+            <button onclick="cerrarPopup()">Cerrar</button>
+        </div>
+    </div>
+</body>
+</html>
