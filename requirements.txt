@@ -8,3 +8,4 @@ joblib
 gradio
 notebook
 flask
+gunicorn
