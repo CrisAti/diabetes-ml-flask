@@ -2,12 +2,15 @@ from flask import Flask, render_template, request
 import numpy as np
 import pandas as pd
 from joblib import load
+import os
 
 app = Flask(__name__)
 
-# Cargar modelo y escalador
-modelo = load("../modelos_guardados/modelo_final.pkl")
-scaler = load("../modelos_guardados/escalador.pkl")
+# Cargar modelo y escalador usando rutas absolutas para compatibilidad Azure
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODELOS_DIR = os.path.abspath(os.path.join(BASE_DIR, '..', 'modelos_guardados'))
+modelo = load(os.path.join(MODELOS_DIR, 'modelo_final.pkl'))
+scaler = load(os.path.join(MODELOS_DIR, 'escalador.pkl'))
 
 @app.route('/')
 def formulario():
@@ -31,4 +34,4 @@ def resultado():
         return render_template("index.html", resultado=f"❌ Error: {e}")
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=8000)
